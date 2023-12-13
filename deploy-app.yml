@@ -1,0 +1,84 @@
+# Create a GitHub action to email a report from a file at 6 a.m. daily.
+name: Email Report
+
+on:
+  schedule:
+    - cron: 0 6 * * *
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Email Report
+      uses: dawidd6/action-send-mail@v2.0.0
+      with:
+        server_address: smtp.gmail.com
+        server_port: 465
+        username: ${{ secrets.EMAIL_USERNAME }}
+        password: ${{ secrets.EMAIL_PASSWORD }}
+        subject: 'Report'
+        body: 'See attached report'
+        to: ${{ secrets.EMAIL_TO }}
+        from: ${{ secrets.EMAIL_FROM }}
+        attachments: 'report.txt'
+```
+
+### Deploying to AWS
+
+The last step is to deploy the application to AWS. The following steps will be performed:
+
+- Create an EC2 instance
+- SSH into the instance
+- Install Docker
+- Install Docker Compose
+- Deploy the application
+
+#### Create an EC2 instance
+
+- Go to the EC2 dashboard
+- Click on "Launch Instance"
+- Choose an Amazon Machine Image (AMI) (Ubuntu Server 20.04 LTS (HVM), SSD Volume Type)
+- Choose an Instance Type (t2.micro)
+- Configure Instance Details (default)
+- Add Storage (default)
+- Add Tags (default)
+- Configure Security Group
+  - Add a rule for SSH (port 22)
+  - Add a rule for HTTP (port 80)
+  - Add a rule for HTTPS (port 443)
+- Review and Launch
+- Select an existing key pair or create a new key pair
+- Launch Instance
+
+#### SSH into the instance
+
+In order to SSH into the instance, you will need to know the public IP address of the instance.
+
+- Go to the EC2 dashboard
+- Click on "Running Instances"
+- Select the instance that was created
+- Copy the public IP address
+
+In order to SSH into the instance, you will need to use the key pair that was created.
+
+- Open a terminal
+- Navigate to the directory where the key pair is stored
+- Run the following command
+
+```bash
+ssh -i "key_pair.pem" ubuntu@<public_ip_address>
+```
+
+#### Install Docker
+
+- Update the package index
+
+```bash
+sudo apt update
+```
+
+- Install packages to allow apt to use a repository over HTTPS
+
+```bash
+sudo apt install apt-transport-https ca-certificates curl software-properties
